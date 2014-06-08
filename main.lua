@@ -17,6 +17,7 @@ require("graphics")
 require("mainloop")
 require("validate")
 require("giftable")
+require("xmutable")
 
 local N_FRAMES = 0
 local min = math.min
