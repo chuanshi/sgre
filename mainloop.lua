@@ -1565,6 +1565,7 @@ function main_xmute()
       frames.xmute.populate_xmutable_card_list()
     end
 
+    --List of transmutable cards of xmute_type
     local xmutable_card_list = loveframes.Create("list")
     xmutable_card_list:SetState("xmute")
     xmutable_card_list:SetX(xmute_pane:GetX()*2+xmute_pane:GetWidth())
@@ -1574,7 +1575,6 @@ function main_xmute()
     xmutable_card_list:SetDisplayType("horizontal")
     function xmutable_card_list:Draw() end
     xmutable_card_list:SetSpacing(5)
-
 
     function frames.xmute.populate_xmutable_card_list() 
       local xmute_type = frames.xmute.xmute_type
@@ -1609,6 +1609,7 @@ function main_xmute()
       end
     end
 
+    --List of cards we can transmute to
     local xmute_to_card_list = loveframes.Create("list")
     xmute_to_card_list:SetState("xmute")
     xmute_to_card_list:SetX(xmute_pane:GetX()*2+xmute_pane:GetWidth())
@@ -1635,42 +1636,7 @@ function main_xmute()
       end
     end
 
-    function frames.xmute.draw_preview_cards(to_card_id, from_card_id, to_card_number, from_card_number)
-      if not frames.xmute.preview_pane then return end
-      if from_card_id then
-        local button = card_list_button(from_card_id, false, nil, function() end)
-        button:SetParent(frames.xmute.preview_pane)
-        button:SetPos(30, 30)
-        if frames.xmute.from_card_button then frames.xmute.from_card_button:Remove() end
-        frames.xmute.from_card_button = button
-      end
-
-      if to_card_id then
-        local button = card_list_button(to_card_id, false, nil, function() end)
-        button:SetParent(frames.xmute.preview_pane)
-        button:SetPos(160, 30)
-        if frames.xmute.to_card_id then frames.xmute.to_card_id:Remove() end
-        frames.xmute.to_card_id = button
-      end
-      if from_card_id and to_card_id then
-        if from_card_number then
-          local number = loveframes.Create("text", frames.xmute.preview_pane)
-          number:SetPos(60, 155)
-          number:SetText("x"..tostring(from_card_number))
-          if frames.xmute.from_card_number then frames.xmute.from_card_number:Remove() end
-          frames.xmute.from_card_number = number
-        end
-
-        if to_card_number then
-          local number = loveframes.Create("text", frames.xmute.preview_pane)
-          number:SetPos(190, 155)
-          number:SetText("x"..tostring(to_card_number))
-          if frames.xmute.to_card_number then frames.xmute.to_card_number:Remove() end
-          frames.xmute.to_card_number = number
-        end
-      end
-
-    end
+    --Top area where we preview our desired xmute and quantity
     function frames.xmute.draw_preview_pane(to_card_id, from_card_id, xmute_type)
       if frames.xmute.preview_pane then
         frames.xmute.preview_pane:Remove()
@@ -1694,14 +1660,14 @@ function main_xmute()
       arrow:SetText("->")
       arrow:SetPos(130, 80)
 
-      local xmute_number = loveframes.Create("numberbox", preview_pane)
-      xmute_number:SetPos(280, 50)
-      xmute_number:SetValue(1)
-      xmute_number:SetMin(0)
-      xmute_number:SetMax(100)
-      local value = xmute_number:GetValue()
+      local xmute_numberbox = loveframes.Create("numberbox", preview_pane)
+      xmute_numberbox:SetPos(280, 50)
+      xmute_numberbox:SetValue(1)
+      xmute_numberbox:SetMin(0)
+      xmute_numberbox:SetMax(100)
+      local value = xmute_numberbox:GetValue()
       frames.xmute.draw_preview_cards(to_card_id, from_card_id, value, multiplier*value)
-      xmute_number.OnValueChanged = function(object, value)
+      xmute_numberbox.OnValueChanged = function(object, value)
         frames.xmute.draw_preview_cards(to_card_id, from_card_id, value, multiplier*value)
         end
 
@@ -1711,14 +1677,49 @@ function main_xmute()
       xmute_button:SetSize(80, 40)
       xmute_button:SetText("Transmute!")
       xmute_button.OnClick = function() 
-        local value = xmute_number:GetValue()
+        local value = xmute_numberbox:GetValue()
         if value * multiplier > frames.xmute.collection[from_card_id] or value < 1 then
           return
         end
-        net_send({type="xmute", to_card_id=to_card_id, from_card_id=from_card_id, to_card_number=xmute_number:GetValue(), xmute_type=xmute_type})
+        net_send({type="xmute", to_card_id=to_card_id, from_card_id=from_card_id, to_card_number=value, xmute_type=xmute_type})
         xmute_button:SetEnabled(false)
         frames.xmute.lobby_button:SetEnabled(false)
         end
+    end
+
+    function frames.xmute.draw_preview_cards(to_card_id, from_card_id, to_card_number, from_card_number)
+      if not frames.xmute.preview_pane then return end
+      if from_card_id then
+        local button = card_list_button(from_card_id, false, nil, function() end)
+        button:SetParent(frames.xmute.preview_pane)
+        button:SetPos(30, 30)
+        if frames.xmute.from_card_button then frames.xmute.from_card_button:Remove() end
+        frames.xmute.from_card_button = button
+      end
+      if to_card_id then
+        local button = card_list_button(to_card_id, false, nil, function() end)
+        button:SetParent(frames.xmute.preview_pane)
+        button:SetPos(160, 30)
+        if frames.xmute.to_card_id then frames.xmute.to_card_id:Remove() end
+        frames.xmute.to_card_id = button
+      end
+
+      if from_card_id and to_card_id then
+        if from_card_number then
+          local number = loveframes.Create("text", frames.xmute.preview_pane)
+          number:SetPos(60, 155)
+          number:SetText("x"..tostring(from_card_number))
+          if frames.xmute.from_card_number then frames.xmute.from_card_number:Remove() end
+          frames.xmute.from_card_number = number
+        end
+        if to_card_number then
+          local number = loveframes.Create("text", frames.xmute.preview_pane)
+          number:SetPos(190, 155)
+          number:SetText("x"..tostring(to_card_number))
+          if frames.xmute.to_card_number then frames.xmute.to_card_number:Remove() end
+          frames.xmute.to_card_number = number
+        end
+      end
     end
     frames.xmute.draw_preview_pane()
 
@@ -1726,7 +1727,6 @@ function main_xmute()
       frames.xmute.lobby_button:SetEnabled(true)
       frames.xmute.xmute_button:SetEnabled(true)
     end
-
   end
 
   loveframes.SetState("xmute")

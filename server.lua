@@ -841,17 +841,17 @@ function Connection:try_xmute(msg)
     multiplier = 1
   end
   if data.collection[from_card_id] < to_card_number * multiplier then
-    return false
+    return false  --we don't have enough stuff
   end
   for _,deck in pairs(data.decks) do
     if deck[from_card_id] and deck[from_card_id] * to_card_number >= data.collection[from_card_id] then
-      return false
+      return false --stuff is being used in decks
     end
   end
   local bad_xmute = true
   for k, v in pairs(xmutable[xmute_type]) do
     if v[from_card_id] and v[to_card_id] then
-      bad_xmute = false
+      bad_xmute = false  --invalid xmute (DRs not in same episode, etc.)
     end
   end
   if bad_xmute then
