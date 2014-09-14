@@ -691,7 +691,7 @@ function main_lobby()
     button.OnClick = function()
       from_lobby = {main_craft}
     end
-
+    
     local button = loveframes.Create("button")
     button:SetPos(50,0)
     button:SetSize(70, 50)

@@ -1,6 +1,6 @@
-bgm = nil
+local bgm = nil
 
-bgm_table = {}
+local bgm_table = {}
 bgm_table["lobby"] = love.audio.newSource("sg_assets/bgm/SwordGirls_Waiting_Room.mp3")
 bgm_table["dungeon"] = love.audio.newSource("sg_assets/bgm/4_sg_bgm_dugeon.mp3")
 bgm_table["rewards"] = love.audio.newSource("sg_assets/bgm/3_sg_bgm_result.mp3")
@@ -17,10 +17,7 @@ function play_bgm(state)
     end
     if bgm then 
         bgm:stop() 
-        bgm = nil
     end
-    if bgm_table[state] then 
-        bgm = bgm_table[state]
-        bgm:play()
-    end
+    bgm = bgm_table[state]
+    bgm:play()
 end
